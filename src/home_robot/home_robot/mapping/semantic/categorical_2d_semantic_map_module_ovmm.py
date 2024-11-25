@@ -277,9 +277,7 @@ class Categorical2DSemanticMapModule(nn.Module):
                 seq_pose_delta[:, t],
                 local_map,
                 local_pose,
-                seq_camera_poses[:, t]
-                if seq_camera_poses is not None
-                else None,
+                seq_camera_poses[:, t],
                 origins,
                 lmb,
                 seq_obstacle_locations[:, t]
@@ -568,9 +566,7 @@ class Categorical2DSemanticMapModule(nn.Module):
                 camera_x = global_pose[:, 0]
             if camera_y is None:
                 camera_y = global_pose[:, 1]
-                global_pose = np.array([camera_x[0].item(), camera_y[0].item(), roll])
-            else:
-                global_pose = np.array([camera_x.item(), camera_y.item(), roll.item()])
+            global_pose = np.array([camera_x.item(), camera_y.item(), roll.item()])
             absolute_point_cloud = du.transform_pose_t(
                 point_cloud_base_coords, global_pose, device
             )

@@ -125,7 +125,7 @@ class InstanceMemory:
         instance_view_score_aggregation_mode="max",
         min_pixels_for_instance_view=100,
         log_dir: Optional[str] = "instances",
-        log_dir_overwrite_ok: bool = False,
+        log_dir_overwrite_ok: bool = True,
         view_matching_config: ViewMatchingConfig = ViewMatchingConfig(),
         mask_cropped_instances: bool = True,
         crop_padding: float = 1.5,

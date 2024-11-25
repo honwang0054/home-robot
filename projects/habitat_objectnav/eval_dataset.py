@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     config.NUM_ENVIRONMENTS = 1
     config.PRINT_IMAGES = 1
-    config.habitat.dataset.split = "val"
+    config.habitat.dataset.split = "val_mini"
 
     agent = ObjectNavAgent(config=config)
     env = HabitatObjectNavEnv(Env(config=config), config=config)

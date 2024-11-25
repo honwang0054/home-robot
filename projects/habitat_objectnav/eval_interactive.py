@@ -12,6 +12,9 @@ from pathlib import Path
 
 import cv2
 import natsort
+import pygame
+pygame.init()
+import time
 
 # TODO Install home_robot, home_robot_sim and remove this
 sys.path.insert(
@@ -27,6 +30,7 @@ from config_utils import get_config
 from habitat.core.env import Env
 
 from home_robot.agent.objectnav_agent.objectnav_agent import ObjectNavAgent
+from home_robot.core.interfaces import DiscreteNavigationAction
 from home_robot_sim.env.habitat_objectnav_env.habitat_objectnav_env import (
     HabitatObjectNavEnv,
 )
@@ -83,23 +87,39 @@ if __name__ == "__main__":
     agent.planner.set_vis_dir(scene_id, env.habitat_env.current_episode.episode_id)
 
     t = 0
-
+    base_action = DiscreteNavigationAction.STOP
     while not env.episode_over:
         t += 1
+        time.sleep(2)
         print(t)
         obs = env.get_observation()
+        keys = pygame.key.get_pressed()
+        # Base control
+        if keys[pygame.K_j]:
+            # Left
+            base_action = DiscreteNavigationAction.TURN_LEFT
+        elif keys[pygame.K_l]:
+            # Right
+            base_action = DiscreteNavigationAction.TURN_RIGHT
+        elif keys[pygame.K_k]:
+            # Back
+            base_action = DiscreteNavigationAction.STOP
+        elif keys[pygame.K_i]:
+            # Forward
+            base_action = DiscreteNavigationAction.MOVE_FORWARD
+        print(base_action)
         action, info = agent.act(obs)
         env.apply_action(action, info=info)
 
     print(env.get_episode_metrics())
 
-    # Record video
-    images = []
-    for path in natsort.natsorted(glob.glob(f"{env.visualizer.vis_dir}/*.png")):
-        images.append(cv2.imread(path))
-    create_video(images, f"{env.visualizer.vis_dir}/video.mp4", fps=20)
+    # # Record video
+    # images = []
+    # for path in natsort.natsorted(glob.glob(f"{env.visualizer.vis_dir}/*.png")):
+    #     images.append(cv2.imread(path))
+    # create_video(images, f"{env.visualizer.vis_dir}/video.mp4", fps=20)
 
-    if config.AGENT.SEMANTIC_MAP.record_instance_ids:
-        # TODO Can we create a visualization of the instance memory here?
-        print("Let's generate visualization")
-        pass
+    # if config.AGENT.SEMANTIC_MAP.record_instance_ids:
+    #     # TODO Can we create a visualization of the instance memory here?
+    #     print("Let's generate visualization")
+    #     pass
