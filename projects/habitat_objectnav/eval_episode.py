@@ -40,6 +40,29 @@ def create_video(images, output_file, fps):
         video_writer.write(image)
     video_writer.release()
 
+import numpy as np
+
+def append_pose_to_file(agent_state, output_file_path: str):
+    """Append a single 4x4 camera pose (transformation matrix) to a file.
+    Each row in the file will represent a flattened 4x4 matrix.
+
+    Args:
+        pose (np.ndarray): A (4,4) np.ndarray representing the camera pose.
+        output_file_path (str): The path to the output file (.txt).
+    """
+    with open(output_file_path, "a") as file:  # Open in append mode
+        flat_matrix = np.zeros((7,))
+        rgb_pose = agent_state.sensor_states["rgb"]
+        rgb_position = rgb_pose.position  # This should already be a NumPy array
+        rgb_rotation = [
+            rgb_pose.rotation.x,
+            rgb_pose.rotation.y,
+            rgb_pose.rotation.z,
+            rgb_pose.rotation.w,
+        ] 
+        flat_matrix[:3] = rgb_position
+        flat_matrix[3:] = rgb_rotation
+        file.write("\t".join(map(str, flat_matrix)) + "\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -88,6 +111,7 @@ if __name__ == "__main__":
         t += 1
         print(t)
         obs = env.get_observation()
+        append_pose_to_file(env.habitat_env.sim.get_agent_state(), '/home/honwang/home-robot/data/scene_datasets/hm3d_v0.2/minival/00802-wcojb4TFT35/camera_pose.txt')
         action, info = agent.act(obs)
         env.apply_action(action, info=info)
 

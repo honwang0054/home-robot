@@ -121,7 +121,7 @@ class HabitatObjectNavEnv(HabitatEnv):
                 "goal_name": goal_name,
                 "recep_goal": None,
             },
-            camera_pose=None,
+            camera_pose=habitat_obs["camera_pose"],
             third_person_image=None,
         )
         obs = self._preprocess_semantic_and_instance(obs, habitat_obs["semantic"])
